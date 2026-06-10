@@ -83,17 +83,31 @@ export default function App() {
   const posterRef = useRef<HTMLDivElement>(null);
 
   const handleDownload = async () => {
+  try {
     if (!posterRef.current) return;
+
     const canvas = await html2canvas(posterRef.current, {
       scale: 2,
       useCORS: true,
-      backgroundColor: null,
+      allowTaint: true,
+      logging: true,
+      backgroundColor: "#FAF6EF",
     });
+
+    const url = canvas.toDataURL("image/png");
+
     const link = document.createElement("a");
+    link.href = url;
     link.download = "Mamamatcha_Ori_SMG_Poster.png";
-    link.href = canvas.toDataURL("image/png");
+
+    document.body.appendChild(link);
     link.click();
-  };
+    document.body.removeChild(link);
+  } catch (err) {
+    console.error("Download failed:", err);
+    alert("Download failed. Check browser console.");
+  }
+};
 
   return (
     <div
